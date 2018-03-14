@@ -1,11 +1,14 @@
+.clr {
+	clear: both;
+}
 .col-8 {
     width: 60%;
-    display: inline-block;
     margin-right: 15px;
+	float: left;
 }
 .col-4 {
     width: calc(40% - 15px);
-    display: inline-block;
+	float: left;
 }
 .mjbQuizContent {
 	margin-bottom: 10px;
@@ -16,10 +19,13 @@
     color: #666;
     font-size: 12px;
 }
-.mjbQuizContent input {
+.mjbQuizContent input, .mjbQuizContent textarea{
     width: 100%;
     line-height: 1.4em;
     font-size: 16px;
+}
+.mjbQuizContent input[type="checkbox"] {
+    width: auto;
 }
 .mjbQuizContent select {
     width: 100%;
@@ -29,4 +35,7 @@
 .mjbQuizContent {
     border-bottom: 1px solid #eeee;
     padding-bottom: 10px;
+}
+.essay, .multiplechoice, .identification{
+	margin-top: 10px;
 }
