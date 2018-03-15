@@ -1,0 +1,32 @@
+.question{
+    font-size: 13px;
+    background: #f9f9f9;
+    padding: 20px;
+    margin: 0 auto 20px;
+    font-style: italic;
+}
+.choice input {
+    float: left;
+    display: block;
+    margin-top: 2px;
+}
+.choice label {
+    float: left;
+    line-height: 1;
+    font-size: 14px;
+}
+.choice {
+    vertical-align: middle;
+    margin-bottom: 5px;
+}
+.identification input {
+    line-height: 1;
+    padding: 10px !important;
+    margin-bottom: 20px;
+}
+.essay textarea {
+    resize: none;
+    height: 200px;
+    font-size: 12px;
+    margin-bottom: 20px;
+}

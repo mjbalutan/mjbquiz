@@ -8,14 +8,20 @@ jQuery(document).ready(function(){
 			jQuery(this).parents(".mjbQuizContent").children(".identification").show();
 			jQuery(this).parents(".mjbQuizContent").children(".essay").hide();
 			jQuery(this).parents(".mjbQuizContent").children(".multiplechoice").hide();
+			jQuery(this).parents(".mjbQuizContent").children(".essay").val('');
+			jQuery(this).parents(".mjbQuizContent").children(".multiplechoice").val('');
 		}else if(jQuery(this).val() == "essay"){
 			jQuery(this).parents(".mjbQuizContent").children(".essay").show();
 			jQuery(this).parents(".mjbQuizContent").children(".identification").hide();
 			jQuery(this).parents(".mjbQuizContent").children(".multiplechoice").hide();
+			jQuery(this).parents(".mjbQuizContent").children(".identification").val('');
+			jQuery(this).parents(".mjbQuizContent").children(".multiplechoice").val('');
 		}else if(jQuery(this).val() == "multiplechoice"){
 			jQuery(this).parents(".mjbQuizContent").children(".multiplechoice").show();
 			jQuery(this).parents(".mjbQuizContent").children(".essay").hide();
 			jQuery(this).parents(".mjbQuizContent").children(".identification").hide();
+			jQuery(this).parents(".mjbQuizContent").children(".identification").val('');
+			jQuery(this).parents(".mjbQuizContent").children(".essay").val('');
 		}
 	});
 });

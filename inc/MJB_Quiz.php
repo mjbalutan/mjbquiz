@@ -9,7 +9,9 @@ class MJB_Quiz {
 		add_action( 'init', array($this, 'registerCertificateCPT') );
 		add_action( 'add_meta_boxes', array($this, 'addMJBQMetaBoxes'));
 		add_action( 'admin_enqueue_scripts', array($this, 'enqueueAdminScripts') );
+		add_action( 'wp_enqueue_scripts', array($this, 'enqueueFrontScripts') );
 		add_action('save_post', array($this, 'saveMetaBoxData'));
+		add_shortcode('mjbQuiz', array($this, 'showAsShortcode'));
     }
 	public function enqueueAdminScripts(){
 		wp_enqueue_script('jquery');
@@ -17,6 +19,11 @@ class MJB_Quiz {
        // wp_enqueue_style('mjbq-boostrap', plugins_url('/css/bootstrap.min.css', dirname(__FILE__)));
        // wp_enqueue_style('mjbq-boostrapscript', plugins_url('/js/bootstrap.min.js', dirname(__FILE__)));
         wp_enqueue_script('mjbq-script', plugins_url('/js/scripts.js', dirname(__FILE__)));
+	}
+	public function enqueueFrontScripts(){
+		wp_enqueue_script('jquery');
+        wp_enqueue_style('mjbq-front', plugins_url('/css/front.css', dirname(__FILE__)));
+		wp_enqueue_script('mjbq-script', plugins_url('/js/front.js', dirname(__FILE__)));
 	}
 	public function addSettingsPage(){
 		add_menu_page('Quiz', 'MJB Quiz', 'manage_options', 'mjb-quiz', array($this, 'loadSettingsPageDashboard') );
@@ -103,6 +110,7 @@ class MJB_Quiz {
 	public function addMJBQMetaBoxes() {
 
 		add_meta_box('mjb-quiz-content','Quiz Content',array($this, 'loadQuizContent'), 'mjb_quiz', 'normal', 'high');
+		add_meta_box('mjb-quiz-shortcode','Quiz Shortcode',array($this, 'loadQuizShortcode'), 'mjb_quiz', 'side', 'high');
 	} 
 	public function loadQuizContent($post) {
 
@@ -115,9 +123,9 @@ class MJB_Quiz {
 				echo '<div class="mjbQuizContent row">';
 				echo '<div class="col-8"><label for="mjbQuizQuestion">Question '. $y .'</label>';
 				echo '<input name="mjbQuizQuestion'. $y .'" type="text" value="'. $value[$x]["question"] .'"/></div>';
-				echo '<div class="col-4"><label for="mjbQuizQuestionType'. $y .'">Question Type</label>';
-				echo '<select class="mjbQuizQuestionType" value="'. $value[$x]["type"] .'" name="mjbQuizQuestion'. $y .'Type'. $y .'">';
-				echo '<option value="" disabled selected>Select Question Type</option>';
+				echo '<div class="col-4"><label for="mjbQuizQuestion'. $y .'Type">Question Type</label>';
+				echo '<select class="mjbQuizQuestionType" value="'. $value[$x]["type"] .'" name="mjbQuizQuestion'. $y .'Type">';
+				echo '<option value="" disabled>Select Question Type</option>';
 				echo '<option value="multiplechoice">Multiple Choice</option>';
 				echo '<option value="identification">Identification</option>';
 				echo '<option value="essay">Essay</option>';
@@ -152,11 +160,15 @@ class MJB_Quiz {
 			echo '</div>';
 			
 	}
+	public function loadQuizShortcode($post) {
+		echo '<input type="text" value="[mjbQuiz id='.$post->ID.']" disabled/>';
+	}
 	public function saveMetaBoxData($post_id){
 		
 		$data = array();
 		for($x = 0; $x < 10; $x++){
 			$data[$x] = array(
+				"id" => $_POST["mjbQuizQuestion".$x."Type"]."_q".$x,
 				"question" => $_POST["mjbQuizQuestion".$x],
 				"type" => $_POST["mjbQuizQuestion".$x."Type"],
 				"content" => array(
@@ -203,6 +215,49 @@ class MJB_Quiz {
 			add_post_meta($post_id, 'mjb_quiz_content_'.$post_id, $key);
 		}
 		
+	}
+	public function showAsShortcode($atts){
+		$atts = extract( shortcode_atts( array(
+			'id' => '',
+		), $atts ) );
+		if ( ! $id ) return;
+		$id   = $id; 
+		$data = get_post_meta( $id, 'mjb_quiz_content_'.$id, true );
+		$data = json_decode(base64_decode($data), true);
+		$output = "<div id='quiz'>";
+		foreach($data as $q){
+			if($q["question"] != ""){
+				$output .= "<div class='question'>".$q["question"]."</div>";
+				if( $q["content"]["identification"]["answer"] != "" ){
+					$output .= "<div class='identification'><input data-keywords='". $q["content"]["identification"]["answer"] ."' type='text' data-score='". $q["content"]["identification"]["score"] ."'id='". $q["id"] ."' value=''></div>";
+				}else if( $q["content"]["multiplechoice"]["choice1"]["answer"] != ""  ){
+					$output .= "<div class='choice'><input value='". $q["content"]["multiplechoice"]["choice1"]["answer"] ."' type='radio' name='choice-". $q["id"] ."' id='choice-". $q["id"] ."' data-score='". $q["content"]["multiplechoice"]["choice1"]["score"] ."'><label>". $q["content"]["multiplechoice"]["choice1"]["answer"] ."</label><div style='clear:both'></div></div>";
+					if($q["content"]["multiplechoice"]["choice2"]["answer"] != "" ){
+						$output .= "<div class='choice'><input value='". $q["content"]["multiplechoice"]["choice2"]["answer"] ."' type='radio' name='choice-". $q["id"] ."' id='choice-". $q["id"] ."' data-score='". $q["content"]["multiplechoice"]["choice2"]["score"] ."'><label>". $q["content"]["multiplechoice"]["choice2"]["answer"] ."</label><div style='clear:both'></div></div>";
+					}
+					if($q["content"]["multiplechoice"]["choice3"]["answer"] != "" ){
+						$output .= "<div class='choice'><input value='". $q["content"]["multiplechoice"]["choice3"]["answer"] ."' type='radio' name='choice-". $q["id"] ."' id='choice-". $q["id"] ."' data-score='". $q["content"]["multiplechoice"]["choice3"]["score"] ."'><label>". $q["content"]["multiplechoice"]["choice3"]["answer"] ."</label><div style='clear:both'></div></div>";
+					}
+					if($q["content"]["multiplechoice"]["choice4"]["answer"] != "" ){
+						$output .= "<div class='choice'><input value='". $q["content"]["multiplechoice"]["choice4"]["answer"] ."' name='choice-". $q["id"] ."' type='radio' id='choice-". $q["id"] ."' data-score='". $q["content"]["multiplechoice"]["choice4"]["score"] ."'><label>". $q["content"]["multiplechoice"]["choice4"]["answer"] ."</label><div style='clear:both'></div></div>";
+					}
+					if($q["content"]["multiplechoice"]["choice5"]["answer"] != "" ){
+						$output .= "<div class='choice'><input type='radio' value='". $q["content"]["multiplechoice"]["choice5"]["answer"] ."' name='choice-". $q["id"] ."' id='choice-". $q["id"] ."' data-score='". $q["content"]["multiplechoice"]["choice5"]["score"] ."'><label>". $q["content"]["multiplechoice"]["choice5"]["answer"] ."</label><div style='clear:both'></div></div>";
+					}
+
+				}else if($q["content"]["essay"]["answer"] != ""){
+					$output .= "<div class='essay'><textarea data-keywords='". $q["content"]["essay"]["answer"]  ."' data-score='". $q["content"]["essay"]["score"] ."' id='".$q["id"]."'></textarea></div>";
+				}
+				$output .= "<hr>";
+			}
+		}
+		$output .= "<input type='button' id='submitQuiz' value='Submit'/>";
+		$output .= "</div>";
+		if ( $data ) {
+			return $output;
+		}else{
+			return $id;
+		}
 	}
 
 }
