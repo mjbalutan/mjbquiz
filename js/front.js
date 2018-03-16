@@ -19,7 +19,11 @@ jQuery(document).ready(function(){
 					
 			}
 		);
-		alert(score);
+		var output = '<div class="results">';
+		 output += '<h1>You have scored ' + score / 100 + '%';
+		 output += '</h1></div>';
+		jQuery("#quiz").html(output);
+		
 	});
 	
 });
