@@ -10,32 +10,65 @@
     width: calc(40% - 15px);
 	float: left;
 }
-.mjbQuizContent {
+.col-2 {
+    width: calc(20% - 30px);
+	float: left;
+	margin-right: 15px;
+}
+.containerContent {
 	margin-bottom: 10px;
 }
-.mjbQuizContent label {
+.containerContent label {
     display: block;
     margin-bottom: 5px;
     color: #666;
     font-size: 12px;
 }
-.mjbQuizContent input, .mjbQuizContent textarea{
+.containerContent input, .containerContent textarea{
     width: 100%;
     line-height: 1.4em;
     font-size: 16px;
 }
-.mjbQuizContent input[type="checkbox"] {
+.containerContent input[type="checkbox"] {
     width: auto;
 }
-.mjbQuizContent select {
-    width: 100%;
-    font-size: 14px;
-    height: 30px;
-}
-.mjbQuizContent {
+.containerContent {
     border-bottom: 1px solid #eeee;
     padding-bottom: 10px;
 }
-.essay, .multiplechoice, .identification{
-	margin-top: 10px;
+.btnContainer {
+    text-align: right;
+}
+.mjbQuizbtn {
+    padding: 10px 15px;
+    margin-left: 20px;
+    background: green;
+    color: #fff;
+    border: none;
+    text-transform: uppercase;
+    font-weight: bold;
+	display: inline-block;
+	text-decoration: none;
+}
+.mjbQuizbtn#mjbDel{
+	background: red;
+}
+.elements label {
+	display: block;
+    width: calc(20% - 15px);
+    padding: 20px;
+    text-align: center;
+    background: #388fa9;
+    color: #fff;
+    float: left;
+    margin-right: 15px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+.elements input {
+    visibility: hidden;
+    height: 0;
+    width: 0;
+    display: inline;
+    float: left;
 }

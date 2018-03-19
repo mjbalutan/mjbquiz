@@ -16,8 +16,6 @@ class MJB_Quiz {
 	public function enqueueAdminScripts(){
 		wp_enqueue_script('jquery');
         wp_enqueue_style('mjbq-style', plugins_url('/css/style.css', dirname(__FILE__)));
-       // wp_enqueue_style('mjbq-boostrap', plugins_url('/css/bootstrap.min.css', dirname(__FILE__)));
-       // wp_enqueue_style('mjbq-boostrapscript', plugins_url('/js/bootstrap.min.js', dirname(__FILE__)));
         wp_enqueue_script('mjbq-script', plugins_url('/js/scripts.js', dirname(__FILE__)));
 	}
 	public function enqueueFrontScripts(){
@@ -115,50 +113,8 @@ class MJB_Quiz {
 	public function loadQuizContent($post) {
 
 			wp_nonce_field( 'mjb_quiz_nonce', 'mjb_quiz_nonce' );
-
-			$value = get_post_meta( $post->ID, 'mjb_quiz_content_'.$post->ID, true );
-			$value = json_decode(base64_decode($value), true);
-			echo '<div class="container">';
-			for($x = 1, $y = 1; $x <= 10; $x++, $y++){
-				echo '<div class="mjbQuizContent row">';
-				echo '<div class="col-8"><label for="mjbQuizQuestion">Question '. $y .'</label>';
-				echo '<input name="mjbQuizQuestion'. $y .'" type="text" value="'. $value[$x]["question"] .'"/></div>';
-				echo '<div class="col-4"><label for="mjbQuizQuestion'. $y .'Type">Question Type</label>';
-				echo '<select class="mjbQuizQuestionType" value="'. $value[$x]["type"] .'" name="mjbQuizQuestion'. $y .'Type">';
-				echo '<option value="" disabled>Select Question Type</option>';
-				echo '<option value="multiplechoice">Multiple Choice</option>';
-				echo '<option value="identification">Identification</option>';
-				echo '<option value="essay">Essay</option>';
-				echo '</select><div class="clr"></div></div><div class="clr"></div>';
-				echo '<div class="multiplechoice">';
-				echo '<div id="multiplechoice1">';
-				echo '<div class="col-8"><label for="mjbQuizQuestion'. $x .'Choice1Content">Choice Value</label><input name="mjbQuizQuestion'. $x .'Choice1Content" type="text" value="'.$value[$x]["content"]["multiplechoice"]["choice1"]["answer"].'"/></div><div class="col-4"><label for="mjbQuizQuestion'. $x .'Choice1Score">Score</label><input name="mjbQuizQuestion'. $x .'Choice1Score" type="text" value="'.$value[$x]["content"]["multiplechoice"]["choice1"]["score"].'"/></div><div class="clr"></div>';
-				echo '</div>';
-				echo '<div id="multiplechoice2">';
-				echo '<div class="col-8"><label for="mjbQuizQuestion'. $x .'Choice2Content">Choice Value</label><input name="mjbQuizQuestion'. $x .'Choice2Content" type="text" value="'.$value[$x]["content"]["multiplechoice"]["choice2"]["answer"].'"/></div><div class="col-4"><label for="mjbQuizQuestion'. $x .'Choice2Score">Score</label><input name="mjbQuizQuestion'. $x .'Choice2Score" type="text" value="'.$value[$x]["content"]["multiplechoice"]["choice2"]["score"].'"/></div><div class="clr"></div>';
-				echo '</div>';
-				echo '<div id="multiplechoice3">';
-				echo '<div class="col-8"><label for="mjbQuizQuestion'. $x .'Choice3Content">Choice Value</label><input name="mjbQuizQuestion'. $x .'Choice3Content" type="text" value="'.$value[$x]["content"]["multiplechoice"]["choice3"]["answer"].'"/></div><div class="col-4"><label for="mjbQuizQuestion'. $x .'Choice3Score">Score</label><input name="mjbQuizQuestion'. $x .'Choice3Score" type="text" value="'.$value[$x]["content"]["multiplechoice"]["choice3"]["score"].'"/></div><div class="clr"></div>';
-				echo '</div>';
-				echo '<div id="multiplechoice4">';
-				echo '<div class="col-8"><label for="mjbQuizQuestion'. $x .'Choice4Content">Choice Value</label><input name="mjbQuizQuestion'. $x .'Choice4Content" type="text" value="'.$value[$x]["content"]["multiplechoice"]["choice4"]["answer"].'"/></div><div class="col-4"><label for="mjbQuizQuestion'. $x .'Choice4Score">Score</label><input name="mjbQuizQuestion'. $x .'Choice4Score" type="text" value="'.$value[$x]["content"]["multiplechoice"]["choice4"]["score"].'"/></div><div class="clr"></div>';
-				echo '</div>';
-				echo '<div id="multiplechoice5">';
-				echo '<div class="col-8"><label for="mjbQuizQuestion'. $x .'Choice5Content">Choice Value</label><input name="mjbQuizQuestion'. $x .'Choice5Content" type="text" value="'.$value[$x]["content"]["multiplechoice"]["choice5"]["answer"].'"/></div><div class="col-4"><label for="mjbQuizQuestion'. $x .'Choice5Score">Score</label><input name="mjbQuizQuestion'. $x .'Choice5Score" type="text" value="'.$value[$x]["content"]["multiplechoice"]["choice5"]["score"].'"/></div><div class="clr"></div>';
-				echo '</div>';
-				echo '</div>';
-				echo '<div class="identification">';
-				echo '<div class="col-8"><label for="mjbQuizQuestion'. $x .'IdentificationAnswer">Identification Answer</label><input name="mjbQuizQuestion'. $x .'IdentificationAnswer" type="text" value="'.$value[$x]["content"]["identification"]["answer"].'"/></div>';
-				echo '<div class="col-4"><label for="mjbQuizQuestion'. $x .'IdentificationScore">Identification Score</label><input name="mjbQuizQuestion'. $x .'IdentificationScore" type="text" value="'. $value[$x]["content"]["identification"]["score"] .'"/></div><div class="clr"></div>';
-				echo '</div>';
-				echo '<div class="essay">';
-				echo '<div class="col-8"><label for="mjbQuizQuestion'. $x .'EssayKeywords">Essay Keywords</label><textarea name="mjbQuizQuestion'. $x .'EssayKeywords" value="'. $value[$x]["content"]["essay"]["answer"] .'"></textarea></div>';
-				echo '<div class="col-4"><label for="mjbQuizQuestion'. $x .'EssayScore">Essay Score</label><input name="mjbQuizQuestion'. $x .'EssayScore" type="text" value="'. $value[$x]["content"]["essay"]["score"] .'"/></div><div class="clr"></div>';
-				echo '</div>';
-				echo '<div class="clr"></div></div>';
-			}
-			echo '</div>';
 			
+			include dirname(__FILE__).'/MJB_Quiz_Content.php';
 	}
 	public function loadQuizShortcode($post) {
 		echo '<input type="text" value="[mjbQuiz id='.$post->ID.']" disabled/>';
@@ -225,8 +181,10 @@ class MJB_Quiz {
 		$data = get_post_meta( $id, 'mjb_quiz_content_'.$id, true );
 		$data = json_decode(base64_decode($data), true);
 		$output = "<div id='quiz'>";
-		foreach($data as $q){
+		foreach(array_slice($data, 0, 6) as $q){
+			
 			if($q["question"] != ""){
+				$output .= "<div class='item'>";
 				$output .= "<div class='question'>".$q["question"]."</div>";
 				if( $q["content"]["identification"]["answer"] != "" ){
 					$output .= "<div class='identification'><input data-keywords='". $q["content"]["identification"]["answer"] ."' type='text' data-score='". $q["content"]["identification"]["score"] ."'id='". $q["id"] ."' value=''></div>";
@@ -249,7 +207,9 @@ class MJB_Quiz {
 					$output .= "<div class='essay'><textarea data-keywords='". $q["content"]["essay"]["answer"]  ."' data-score='". $q["content"]["essay"]["score"] ."' id='".$q["id"]."'></textarea></div>";
 				}
 				$output .= "<hr>";
+				$output .= "</div>";
 			}
+			
 		}
 		$output .= "<input type='button' id='submitQuiz' value='Submit'/>";
 		$output .= "</div>";
