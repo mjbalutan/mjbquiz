@@ -2,14 +2,14 @@ jQuery(document).ready(function(){
 	jQuery(".multiplechoice").hide();
 	jQuery(".essay").hide();
 	jQuery(".identification").hide();
-	
+	var i = 1;
 	jQuery('#mjbAdd').click(function(){
 		var item = jQuery('.elements input[name="element"]:checked').val();
-		var i = 1;
+		html = "<div id='mjbItemQuestion" + i + "'>";
 		
 		if(item == "ide"){
-			html = "<div class='mjbItemIde" + i + "'>";
-			html = "<div class='col-8'>";
+			html += "<div class='mjbItemIde" + i + "'>";
+			html += "<div class='col-8'>";
 			html += "<label for='mjbItemIde_question-"+ i +"'>Question</label>";
 			html += "<input type='text' id='mjbItemIde_question-" + i + "' value=''/>";
 			html += "</div>";
@@ -25,13 +25,13 @@ jQuery(document).ready(function(){
 			html += "</div>";
 			jQuery(html).appendTo(".containerContent");
 		}else if(item == "multi"){
-			html = "<div class='mjbItem" + i + "'>";
-			html = "<div class='col-8'>";
+			html += "<div class='mjbItem" + i + "'>";
+			html += "<div class='col-8'>";
 			html += "<label for='mjbItemMul_question-"+ i +"'>Question</label>";
 			html += "<input type='text' id='mjbItemMul_question-" + i + "' value=''/>";
 			html += "</div>";
 			html += "<div class='col-2'>";
-			html += "<label for='mjbItemMul_question-a"+ i +"'>Answer</label>";
+			html += "<label for='mjbItemMul_question-a" + i + "'>Answer</label>";
 			html += "<input type='text' id='mjbItemMul_question-a" + i + "' value=''/>";
 			html += "</div>";
 			html += "<div class='col-2'>";
@@ -39,11 +39,31 @@ jQuery(document).ready(function(){
 			html += "<input type='text' id='mjbItemMul_question-s" + i + "' value=''/>";
 			html += "</div>";
 			html += "<div class='clr'></div>";
+			html += "<div class='col-8'>";
+			html += "<label for='mjbItemMul_question-c"+ i +"1'>Choice 1</label>";
+			html += "<input type='text' id='mjbItemMul_question-c" + i + "1' value=''/>";
+			html += "</div>";
+			html += "<div class='clr'></div>";
+			html += "<div class='col-8'>";
+			html += "<label for='mjbItemMul_question-c"+ i +"2'>Choice 2</label>";
+			html += "<input type='text' id='mjbItemMul_question-c" + i + "2' value=''/>";
+			html += "</div>";
+			html += "<div class='clr'></div>";
+			html += "<div class='col-8'>";
+			html += "<label for='mjbItemMul_question-c"+ i +"3'>Choice 3</label>";
+			html += "<input type='text' id='mjbItemMul_question-c" + i + "3' value=''/>";
+			html += "</div>";
+			html += "<div class='col-8'>";
+			html += "<label for='mjbItemMul_question-c"+ i +"4'>Choice 4</label>";
+			html += "<input type='text' id='mjbItemMul_question-c" + i + "4' value=''/>";
+			html += "</div>";
+			html += "<div class='clr'></div>";
+			html += "<div class='clr'></div>";
 			html += "</div>";
 			jQuery(html).appendTo(".containerContent");
 		}else if(item == "es"){
-			html = "<div class='mjbItem" + i + "'>";
-			html = "<div class='col-8'>";
+			html += "<div class='mjbItem" + i + "'>";
+			html += "<div class='col-8'>";
 			html += "<label for='mjbItemEs_question-"+ i +"'>Question</label>";
 			html += "<input type='text' id='mjbItemEs_question-" + i + "' value=''/>";
 			html += "</div>";
@@ -59,8 +79,8 @@ jQuery(document).ready(function(){
 			html += "</div>";
 			jQuery(html).appendTo(".containerContent");
 		}else if(item == "sb"){
-			html = "<div class='mjbItem" + i + "'>";
-			html = "<div class='col-8'>";
+			html += "<div class='mjbItem" + i + "'>";
+			html += "<div class='col-8'>";
 			html += "<label for='mjbItemSb_question-"+ i +"'>No. of Points to Continue</label>";
 			html += "<input type='text' id='mjbItemSb_question-" + i + "' value=''/>";
 			html += "</div>";
@@ -72,5 +92,7 @@ jQuery(document).ready(function(){
 			html += "</div>";
 			jQuery(html).appendTo(".containerContent");
 		}
+		html += "</div>";
+		i++;
 	});
 });
