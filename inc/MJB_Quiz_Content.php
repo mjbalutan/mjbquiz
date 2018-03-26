@@ -26,7 +26,13 @@
 		<div class="clr"></div>
 	</div>
 	<div class="containerContent">
-	
+		<?php if($value != ""){
+			echo '<pre>';
+			print_r($value);
+			echo '</pre>';
+		}else{
+		}
+			?>
 	</div>
 	<div class="btnContainer">
 		<a href="#add" id="mjbAdd" class="mjbQuizbtn">Add</a><a href="#delete" id="mjbDel" class="mjbQuizbtn">Delete</a>

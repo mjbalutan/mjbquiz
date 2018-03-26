@@ -17,6 +17,8 @@ class MJB_Quiz {
 		wp_enqueue_script('jquery');
         wp_enqueue_style('mjbq-style', plugins_url('/css/style.css', dirname(__FILE__)));
         wp_enqueue_script('mjbq-script', plugins_url('/js/scripts.js', dirname(__FILE__)));
+		wp_enqueue_script('ajax_script', plugins_url('/js/ajax.js', dirname(__FILE__)));
+		wp_localize_script('ajax_script', 'myAjax', array('url'=>admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce("saveMetaBoxData_nonce")));
 	}
 	public function enqueueFrontScripts(){
 		wp_enqueue_script('jquery');
@@ -26,8 +28,6 @@ class MJB_Quiz {
 	public function addSettingsPage(){
 		add_menu_page('Quiz', 'MJB Quiz', 'manage_options', 'mjb-quiz', array($this, 'loadSettingsPageDashboard') );
 		add_submenu_page( 'mjb-quiz', 'Quizzes', 'Quizzes', 'manage_options', 'edit.php?post_type=mjb_quiz', NULL );
-		add_submenu_page( 'mjb-quiz', 'Certificates', 'Certificates', 'manage_options', 'edit.php?post_type=mjb_certificate', NULL );
-		add_submenu_page('mjb-quiz', 'Settings', 'Settings', 'manage_options', 'mjb-quiz-settings', array($this, 'loadSettingsPageSettings') );
 	}
 	public function loadSettingsPageDashboard(){
 		include 'MJB_Quiz-admin.php';
@@ -120,48 +120,64 @@ class MJB_Quiz {
 		echo '<input type="text" value="[mjbQuiz id='.$post->ID.']" disabled/>';
 	}
 	public function saveMetaBoxData($post_id){
-		
 		$data = array();
-		for($x = 0; $x < 10; $x++){
-			$data[$x] = array(
-				"id" => $_POST["mjbQuizQuestion".$x."Type"]."_q".$x,
-				"question" => $_POST["mjbQuizQuestion".$x],
-				"type" => $_POST["mjbQuizQuestion".$x."Type"],
-				"content" => array(
-					"identification" => array(
-						"answer" => $_POST["mjbQuizQuestion".$x."IdentificationAnswer"],
-						"score" => $_POST["mjbQuizQuestion".$x."IdentificationScore"]
-					),
-					"multiplechoice" => array(
-						"choice1" => array(
-							"answer" => $_POST["mjbQuizQuestion".$x."Choice1Content"],
-							"score" => $_POST["mjbQuizQuestion".$x."Choice1Score"]
-						),
-						"choice2" => array(
-							"answer" => $_POST["mjbQuizQuestion".$x."Choice2Content"],
-							"score" => $_POST["mjbQuizQuestion".$x."Choice2Score"]
-						),
-						"choice3" => array(
-							"answer" => $_POST["mjbQuizQuestion".$x."Choice3Content"],
-							"score" => $_POST["mjbQuizQuestion".$x."Choice3Score"]
-						),
-						"choice4" => array(
-							"answer" => $_POST["mjbQuizQuestion".$x."Choice4Content"],
-							"score" => $_POST["mjbQuizQuestion".$x."Choice4Score"]
-						),
-						"choice5" => array(
-							"answer" => $_POST["mjbQuizQuestion".$x."Choice5Content"],
-							"score" => $_POST["mjbQuizQuestion".$x."Choice5Score"]
-						)
+		$x = 0;
+		foreach($_POST as $key => $value) {
+			if (strpos($key, 'mjbItemquestion_') === 0) {
+				// value starts with mjbItemquestion_
+				if(strpos($key, 'mjbItemquestion_Mul') === 0){
+					if(strpos($key, 'mjbItemquestion_Mul') === 0){
+						array_push($data["mul"]["q"]["question"], $value);
+					}
+					if(strpos($key, 'mjbItemquestion_Mul-a') === 0){
+						array_push($data["mul"]["q"]["answer"], $value);
+					}
+					if(strpos($key, 'mjbItemquestion_Mul-s') === 0){
+						array_push($data["mul"]["q"]["score"], $value);
+					}
+					if(strpos($key, 'mjbItemquestion_Mul-c1') === 0){
+						array_push($data["mul"]["q"]["choice1"], $value);
+					}
+					if(strpos($key, 'mjbItemquestion_Mul-c2') === 0){
+						array_push($data["mul"]["q"]["choice2"], $value);
+					}
+					if(strpos($key, 'mjbItemquestion_Mul-c3') === 0){
+						array_push($data["mul"]["q"]["choice3"], $value);
+					}
+					if(strpos($key, 'mjbItemquestion_Mul-c4') === 0){
+						array_push($data["mul"]["q"]["choice4"], $value);
+					}
+				}
+				if(strpos($key, 'mjbItemquestion_Sb') === 0){
+					array_push($data["sb"]["q"], $value);
+				}
+				if(strpos($key, 'mjbItemquestion_Ide') === 0){
+					if(strpos($key, 'mjbItemquestion_Ide') === 0){
+						array_push($data["id"]["q"]["question"], $value);
+					}
+					if(strpos($key, 'mjbItemquestion_Ide-a') === 0){
+						array_push($data["id"]["q"]["answer"], $value);
+					}
+					if(strpos($key, 'mjbItemquestion_Ide-s') === 0){
+						array_push($data["id"]["q"]["score"], $value);
+					}
+				}
+				if(strpos($key, 'mjbItemquestion_Es') === 0){
+					if(strpos($key, 'mjbItemquestion_Es') === 0){
+						array_push($data["es"]["q"]["question"], $value);
+					} 
+					if(strpos($key, 'mjbItemquestion_Es-a') === 0){
+						array_push($data["es"]["q"]["answer"], $value);
+					}
+					if(strpos($key, 'mjbItemquestion_Es-s') === 0){
+						array_push($data["es"]["q"]["score"], $value);
+					}
+				}
+				$x++;
+			}
 			
-					),
-					"essay" => array(
-						"answer" => $_POST["mjbQuizQuestion".$x."EssayKeywords"],
-						"score" => $_POST["mjbQuizQuestion".$x."EssayScore"]
-					)
-				)
-			); 
 		}
+		
 		
 		$key = base64_encode(json_encode($data));
 		
@@ -180,41 +196,9 @@ class MJB_Quiz {
 		$id   = $id; 
 		$data = get_post_meta( $id, 'mjb_quiz_content_'.$id, true );
 		$data = json_decode(base64_decode($data), true);
-		$output = "<div id='quiz'>";
-		foreach(array_slice($data, 0, 6) as $q){
-			
-			if($q["question"] != ""){
-				$output .= "<div class='item'>";
-				$output .= "<div class='question'>".$q["question"]."</div>";
-				if( $q["content"]["identification"]["answer"] != "" ){
-					$output .= "<div class='identification'><input data-keywords='". $q["content"]["identification"]["answer"] ."' type='text' data-score='". $q["content"]["identification"]["score"] ."'id='". $q["id"] ."' value=''></div>";
-				}else if( $q["content"]["multiplechoice"]["choice1"]["answer"] != ""  ){
-					$output .= "<div class='choice'><input value='". $q["content"]["multiplechoice"]["choice1"]["answer"] ."' type='radio' name='choice-". $q["id"] ."' id='choice-". $q["id"] ."' data-score='". $q["content"]["multiplechoice"]["choice1"]["score"] ."'><label>". $q["content"]["multiplechoice"]["choice1"]["answer"] ."</label><div style='clear:both'></div></div>";
-					if($q["content"]["multiplechoice"]["choice2"]["answer"] != "" ){
-						$output .= "<div class='choice'><input value='". $q["content"]["multiplechoice"]["choice2"]["answer"] ."' type='radio' name='choice-". $q["id"] ."' id='choice-". $q["id"] ."' data-score='". $q["content"]["multiplechoice"]["choice2"]["score"] ."'><label>". $q["content"]["multiplechoice"]["choice2"]["answer"] ."</label><div style='clear:both'></div></div>";
-					}
-					if($q["content"]["multiplechoice"]["choice3"]["answer"] != "" ){
-						$output .= "<div class='choice'><input value='". $q["content"]["multiplechoice"]["choice3"]["answer"] ."' type='radio' name='choice-". $q["id"] ."' id='choice-". $q["id"] ."' data-score='". $q["content"]["multiplechoice"]["choice3"]["score"] ."'><label>". $q["content"]["multiplechoice"]["choice3"]["answer"] ."</label><div style='clear:both'></div></div>";
-					}
-					if($q["content"]["multiplechoice"]["choice4"]["answer"] != "" ){
-						$output .= "<div class='choice'><input value='". $q["content"]["multiplechoice"]["choice4"]["answer"] ."' name='choice-". $q["id"] ."' type='radio' id='choice-". $q["id"] ."' data-score='". $q["content"]["multiplechoice"]["choice4"]["score"] ."'><label>". $q["content"]["multiplechoice"]["choice4"]["answer"] ."</label><div style='clear:both'></div></div>";
-					}
-					if($q["content"]["multiplechoice"]["choice5"]["answer"] != "" ){
-						$output .= "<div class='choice'><input type='radio' value='". $q["content"]["multiplechoice"]["choice5"]["answer"] ."' name='choice-". $q["id"] ."' id='choice-". $q["id"] ."' data-score='". $q["content"]["multiplechoice"]["choice5"]["score"] ."'><label>". $q["content"]["multiplechoice"]["choice5"]["answer"] ."</label><div style='clear:both'></div></div>";
-					}
 
-				}else if($q["content"]["essay"]["answer"] != ""){
-					$output .= "<div class='essay'><textarea data-keywords='". $q["content"]["essay"]["answer"]  ."' data-score='". $q["content"]["essay"]["score"] ."' id='".$q["id"]."'></textarea></div>";
-				}
-				$output .= "<hr>";
-				$output .= "</div>";
-			}
-			
-		}
-		$output .= "<input type='button' id='submitQuiz' value='Submit'/>";
-		$output .= "</div>";
 		if ( $data ) {
-			return $output;
+			return $data;
 		}else{
 			return $id;
 		}
